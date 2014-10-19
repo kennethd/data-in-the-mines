@@ -1,0 +1,9 @@
+###data-in-the-mines###
+DITM_VENV="$HOME/git/data-in-the-mines"
+@reboot   cd "$DITM_VENV" && . ./bin/activate && DITM_CONFIG=./etc/data-in-the-mines.conf ./bin/data-in-the-mines reboot
+@hourly   cd "$DITM_VENV" && . ./bin/activate && DITM_CONFIG=./etc/data-in-the-mines.conf ./bin/data-in-the-mines hourly
+@daily    cd "$DITM_VENV" && . ./bin/activate && DITM_CONFIG=./etc/data-in-the-mines.conf ./bin/data-in-the-mines daily
+@weekly   cd "$DITM_VENV" && . ./bin/activate && DITM_CONFIG=./etc/data-in-the-mines.conf ./bin/data-in-the-mines weekly
+@monthly  cd "$DITM_VENV" && . ./bin/activate && DITM_CONFIG=./etc/data-in-the-mines.conf ./bin/data-in-the-mines monthly
+@yearly   cd "$DITM_VENV" && . ./bin/activate && DITM_CONFIG=./etc/data-in-the-mines.conf ./bin/data-in-the-mines yearly
+###data-in-the-mines###

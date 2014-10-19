@@ -1,0 +1,8 @@
+coverage
+flask
+nose
+numpy
+pandas
+pylint
+rpy2
+scipy

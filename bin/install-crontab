@@ -1,0 +1,58 @@
+#!/bin/sh -x
+DIR="$( cd "$( dirname "$0" )" && pwd )"
+ETC_DIR="$( dirname "$DIR" )"/etc
+OLD_CRONTAB=$( crontab -l )
+if [ -z "$OLD_CRONTAB" ]
+then
+    # new installation for user with no crontab
+    crontab "$ETC_DIR"/crontab
+    exit 0
+fi
+
+DELIM="###data-in-the-mines###"
+COUNT_DELIMITERS=$( crontab -l | grep -c "$DELIM" )
+if [ $COUNT_DELIMITERS -eq 1 ] || [ $COUNT_DELIMITERS -gt 2 ]
+then
+    echo "install-crontab: malformed data-in-the-mines section" >&2
+    exit 1
+fi
+
+TEMPFILE="$(mktemp)"
+trap "rm -f \"$TEMPFILE\"" EXIT
+
+if [ $COUNT_DELIMITERS -eq 0 ]
+then
+    # new installation for user who already had a crontab
+    crontab -l > "$TEMPFILE"
+    echo "\n" >> "$TEMPFILE"
+    cat "$ETC_DIR"/crontab >> "$TEMPFILE"
+    crontab "$TEMPFILE"
+
+elif [ $COUNT_DELIMITERS -eq 2 ]
+then
+    COUNT_DELIMITERS_SEEN=0
+    printf "%s" "$OLD_CRONTAB" | while read line
+    do
+        # ignore lines between delimiters
+        if [ "$line" = "$DELIM" ]
+        then
+            if [ $COUNT_DELIMITERS_SEEN -eq 0 ]
+            then
+                # cat new version of package's crontab
+                cat "$ETC_DIR"/crontab >> "$TEMPFILE"
+                COUNT_DELIMITERS_SEEN=1
+            else
+                COUNT_DELIMITERS_SEEN=2
+            fi
+        # as long as we are not between delimiters, echo line to new crontab
+        elif [ $COUNT_DELIMITERS_SEEN -ne 1 ]
+        then
+            # echo "$line" (no -e) expands \n
+            printf "%s\n" "$line" >> "$TEMPFILE"
+        fi
+    done
+    crontab "$TEMPFILE"
+fi
+
+cat "$TEMPFILE"
+exit 0

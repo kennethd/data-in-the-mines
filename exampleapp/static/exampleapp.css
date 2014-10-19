@@ -1,0 +1,54 @@
+
+body {
+    font-family: sans-serif;
+    font-size: 100%;
+}
+
+a {
+    text-decoration: none;
+    color: #336666;
+}
+
+h1, h2, h3, h4 {
+    font-weight: bold;
+    color: teal;
+}
+
+#error_msg {
+    color: red;
+    font-weight: bold;
+    padding-bottom: 10px;
+}
+
+#success_msg {
+    color: green;
+    font-weight: bold;
+    padding-bottom: 10px;
+}
+
+#contents {
+    padding: 15px;
+    background-color: red;
+}
+
+#header {
+    text-width: 100%;
+}
+
+#footer {
+    padding-top: 60px;
+    font-size: 75%;
+    color: #666;
+    font-style: italic;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0px 0px 10px 0px;
+}
+
+nav li {
+    display: inline;
+    padding: 0px 10px 10px 10px;
+}
+

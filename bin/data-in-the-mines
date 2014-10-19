@@ -1,0 +1,14 @@
+#!/usr/bin/env python2.7
+
+import argparse
+import sys
+
+parser = argparse.ArgumentParser(description='Run configured reports')
+parser.add_argument('--config', default="~/etc/data-in-the-mines.conf", help="config file")
+parser.add_argument('frequency')
+args = parser.parse_args()
+
+
+
+
+sys.exit(0)
