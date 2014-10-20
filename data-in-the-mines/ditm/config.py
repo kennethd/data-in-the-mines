@@ -19,19 +19,26 @@ def read_configs(config_dir):
     >>> c = read_configs(confroot)
     >>> len(c)
     1
-    >>> len(c['data-in-the-mines.examples.mtcars.input_generator'])
+    >>> ig = 'data-in-the-mines.examples.mtcars.input_generator'
+    >>> len(c[ig])
     3
+    >>> report_ids = sorted([ conf['report_id'] for conf in c[ig] ])
+    >>> report_ids
+    ['mtcars_kmeans3', 'mtcars_kmeans4', 'mtcars_stats']
     """
     cp = ConfigParser.SafeConfigParser()
     configs = defaultdict(list)
     for f in os.listdir(config_dir):
-        file_path = os.path.sep.join([config_dir, f])
-        cp.read(file_path)
-        source = cp.get(REPORT_SECTION, 'source')
-        configs[source].append({
-            'title': cp.get(REPORT_SECTION, 'title'),
-            'section': cp.get(REPORT_SECTION, 'section'),
-            'handler': cp.get(REPORT_SECTION, 'handler'),
-        })
+        if f[-5:] == ".conf":
+            report_id = f[:-5]
+            file_path = os.path.sep.join([config_dir, f])
+            cp.read(file_path)
+            source = cp.get(REPORT_SECTION, 'source')
+            configs[source].append({
+                'title': cp.get(REPORT_SECTION, 'title'),
+                'section': cp.get(REPORT_SECTION, 'section'),
+                'handler': cp.get(REPORT_SECTION, 'handler'),
+                'report_id': report_id,
+            })
     return dict(configs)
 
