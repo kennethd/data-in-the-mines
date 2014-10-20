@@ -16,14 +16,14 @@ config:
 # dev-helper targets
 
 edit:
-	vim `find ./data-in-the-mines ./exampleapp \( -name __init__.py -o -name '*.pyc' -o -name '*.swp' -o -name '*.swo' \) -prune  -o -type f  -print`
+	vim README.md Makefile requirements.txt `find ./data-in-the-mines ./exampleapp \( -path '*.egg-info' -o -path '*/build/*' -o -name 'jquery*' -o -name __init__.py -o -name '*.egg' -o -name '*.pyc' -o -name '*.swp' -o -name '*.swo' -o -iname '*.ico' -o -iname '*.png' -o -iname '*.gif' -o -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.pdf' -o -iname '*.doc' \) -prune  -o -type f  -print`
 
 test:
 	nosetests  -sv --with-doctest --logging-level=INFO --cover-branches --with-coverage --cover-erase --cover-package=data-in-the-mines data-in-the-mines
 
 # runtime targets
 
-run-example:
+run-exampleapp:
 	. ./bin/activate && ./exampleapp/app.py
 
 # installation targets
@@ -35,10 +35,10 @@ install-crontab:
 	git pull origin master && ./bin/install-crontab
 
 package-deps:
-	sudo aptitude update && sudo aptitude safe-upgrade && sudo aptitude install gawk git python2.7 python-dev python-pip python-virtualenv r-recommended
+	sudo aptitude update && sudo aptitude safe-upgrade && sudo aptitude install gawk git libfreetype6-dev python2.7 python-dev python-pip python-virtualenv r-recommended
 
 uninstall:
-	. ./bin/activate && yes | pip uninstall ditm
+	. ./bin/activate && yes | pip uninstall data-in-the-mines
 
 virtualenv:
 	virtualenv --python=/usr/bin/python2.7 --no-site-packages --setuptools --prompt="[$(VIRTUALENV_NAME)]" . && \

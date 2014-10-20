@@ -1,5 +1,6 @@
 #!/usr/bin/env python2.7
 
+import argparse
 import logging
 import os
 import sys
@@ -10,15 +11,17 @@ from ditm.flask.blueprint import ditm
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
-app.register_blueprint(ditm)
+app.register_blueprint(ditm, url_prefix='/datamines')
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
-if __name__ == '__main__':
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('error404.html'), 404
 
-    import argparse
+if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='example data-in-the-mines app')
     parser.add_argument('--config', help="config file.  if not set, will look for EXAMPLEAPP_CONFIG")

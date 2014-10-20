@@ -1,8 +1,10 @@
 coverage
 flask
+matplotlib
 nose
 numpy
 pandas
 pylint
 rpy2
+scikit-learn
 scipy
