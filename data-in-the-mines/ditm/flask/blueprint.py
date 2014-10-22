@@ -1,9 +1,8 @@
 
 import os
 
-from flask import Blueprint, abort, current_app, render_template, send_from_directory, url_for
+from flask import Blueprint, abort, current_app, render_template, send_from_directory
 from jinja2 import TemplateNotFound
-from werkzeug.utils import secure_filename
 
 from ditm import reports
 from ditm.config import read_configs
@@ -68,6 +67,9 @@ def show(section='index', period='examples', report_id='', report_date='', filen
     except IndexError:
         last_date = ''
 
+    if not report_date:
+        report_date = last_date
+
     resource_path = "/".join([
         current_app.config['DITM_URL_PREFIX'],
         section,
@@ -89,7 +91,6 @@ def show(section='index', period='examples', report_id='', report_date='', filen
         'resource_path': resource_path,
         'report_template': report_template
     }
-
     if filename:
         resource_dir = os.path.sep.join([
             report_root,

@@ -2,49 +2,65 @@
 {% block head %}
     <link rel="stylesheet" type="text/css" href="{{ ditm_path }}/static/ditm.css">
     <script src="{{ ditm_path }}/static/ditm.js"></script>
+    <script src="/static/jquery-1.11.0.min.js"></script>
 {% endblock %}
 {% block title %}data in the mines{% endblock %}
 {% block header %}<h1>data in the mines</h1>{% endblock %}
 {% block content %}
 
 <menu type="toolbar">
-    <select name="section" >
+    <select class="exampleapp_nav" name="section" >
     {% for s in sections %}
-    <option value="{{ s }}"{% if s == section %} selected="true"{% endif %}>{{ s }}</option>
+        <option value="{{ s }}"{% if s == section %} selected="true"{% endif %}>{{ s }}</option>
     {% endfor %}
     </select>
 
     {% if periods %}
-    <select name="period">
+    <select class="exampleapp_nav" name="period">
     {% for p in periods %}
-    <option value="{{ p }}"{% if p == period %} selected="true"{% endif %}>{{ p }}</option>
+        <option value="{{ p }}"{% if p == period %} selected="true"{% endif %}>{{ p }}</option>
     {% endfor %}
     </select>
     {% endif %}
 
     {% if report_ids %}
-    <select name="report_id">
+    <select class="exampleapp_nav" name="report_id">
+        <option value=""></option>
     {% for r in report_ids %}
-    <option value="{{ r }}"{% if r == report_id %} selected="true"{% endif %}>{{ r }}</option>
+        <option value="{{ r }}"{% if r == report_id %} selected="true"{% endif %}>{{ r }}</option>
     {% endfor %}
     </select>
     {% endif %}
 
     {% if report_dates %}
-    <select name="date">
+
+    <select class="exampleapp_nav" name="date">
     {% for d in report_dates %}
-    <option value="{{ d }}"{% if d == report_date %} selected="true"{% endif %}>{{ d }}</option>
+        <option value="{{ d }}"{% if d == report_date %} selected="true"{% endif %}>{{ d }}</option>
     {% endfor %}
     </select>
     {% endif %}
 </menu>
 
 <div id="report_content">
-    <p>{{resource_path}}</p>
-    <p>{{report_template}}</p>
     {% if report_template %}
         {% include report_template %}
     {% endif %}
 </div>
 
+<script>
+
+$(".exampleapp_nav").change(function() {
+    var selected_name =  $(this).attr("name")
+    var redirect_path = ["{{ditm_path}}"]
+    $(".exampleapp_nav").each(function() {
+        redirect_path.push($(this).val())
+        if (selected_name == $(this).attr("name")) {
+            return false;
+        }
+    })
+    window.location = redirect_path.join("/")
+});
+
+</script>
 {% endblock %}
