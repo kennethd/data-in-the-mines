@@ -39,6 +39,7 @@ def read_configs(config_dir):
                 'section': cp.get(REPORT_SECTION, 'section'),
                 'handler': cp.get(REPORT_SECTION, 'handler'),
                 'report_id': report_id,
+                'template': cp.get(REPORT_SECTION, 'template'),
             })
     return dict(configs)
 

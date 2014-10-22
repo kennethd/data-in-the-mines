@@ -1,0 +1,250 @@
+{% extends 'base.html' %}
+
+{% block title %}{{page_title}}{% endblock %}
+
+{% block head %}
+    <script src="/static/d3.min.js"></script>
+    <script src="/static/jquery-1.11.0.min.js"></script>
+    <script src="/static/bootstrap.min.js"></script>
+{% endblock %}
+
+{% block content %}
+    <select id="sort_list" class="form-control">
+        <option value="user" {% if stat_filter == "user" %} selected="selected"{% endif %}>By User Popularity</option>
+        <option value="robot" {% if stat_filter == "robot" %} selected="selected"{% endif %}>By Robot Popularity</option>
+        <option value="tester" {% if stat_filter == "tester" %} selected="selected"{% endif %}>By Tester Popularity</option>
+        <option value="all" {% if stat_filter == "all" %} selected="selected"{% endif %}>By General Popularity</option>
+        <option value="ratio_general" {% if stat_filter == "ratio_general" %} selected="selected"{% endif %}>By Ratio General Popularity</option>
+        <option value="ratio_user" {% if stat_filter == "ratio_user" %} selected="selected"{% endif %}>By Ratio User Popularity</option>
+    </select>
+
+    <div class="yp-content-container">
+    </div>
+
+    <style>
+
+    text {
+        font: 10px sans-serif;
+    }
+
+    circle {
+        width:150px;
+        height:150px;
+        border: solid 1px #555;
+        box-shadow: 10px -10px rgba(0,0,0,0.6);
+        -moz-box-shadow: 10px -10px rgba(0,0,0,0.6);
+        -webkit-box-shadow: 10px -10px rgba(0,0,0,0.6);
+        -o-box-shadow: 10px -10px rgba(0,0,0,0.6);
+        border-radius:100px;
+    }
+    </style>
+    <script>
+
+    $("#sort_list").change(function() {
+        var filter = $(this).val()
+        window.location = "{{ ditm_path }}/visuals/examples/visual_playlists?filter=" + filter
+    });
+
+    var stat_filter = $("#sort_list").val
+
+    var tooltip = d3.select("body")
+        .append("div")
+        .style("position", "absolute")
+        .style("background-color", "#fff")
+        .style("background-image",
+                            "linear-gradient(#eee .1em, transparent .1em)")
+        .style("background-size", "100% 1.2em")
+        .style("color", "black")
+        .style("z-index", "10")
+        .style("box-shadow", "1px 1px 5px rgba(0, 0, 0, 1)")
+        .style("border-radius", "5px")
+        .style("visibility", "hidden");
+
+    var diameter = 1600,
+        format = d3.format(",d"),
+        color = d3.scale.category10();
+
+    var bubble = d3.layout.pack()
+        .sort( function(a, b) {
+            if (stat_filter == "user") {
+                return -(a.user_popularity - b.user_popularity);
+            }
+            else if (stat_filter == "robot") {
+                return -(a.robot_popularity - b.robot_popularity);
+            }
+            else if (stat_filter == "tester") {
+                return -(a.tester_popularity - b.tester_popularity);
+            }
+            else if (stat_filter == "all") {
+                return -((a.tester_popularity + a.robot_popularity + a.user_popularity) - (b.tester_popularity + b.robot_popularity + b.user_popularity));
+            }
+            else if (stat_filter == "ratio_general") {
+                return -(((a.tester_popularity + a.robot_popularity + a.user_popularity)/ a.value) - ((b.tester_popularity + b.robot_popularity + b.user_popularity)/ b.value));
+            }
+            else if (stat_filter == "ratio_user") {
+                return -((a.user_popularity/ a.value) - (b.user_popularity/ b.value));
+            }
+        })
+        .size([diameter, diameter])
+        .padding(1.5);
+
+    var svg = d3.select(".yp-content-container").append("svg")
+        .attr("width", diameter)
+        .attr("height", diameter)
+        .attr("class", "bubble");
+
+    d3.json("resources/playlists.json", function(error, root) {
+            if (stat_filter == "user") {
+                var node = svg.selectAll(".node")
+                                .data(bubble.nodes(classes(root))
+                                .filter(function(d) { return !d.children; }))
+                            .enter()
+                                .append("g")
+                                .attr("class", "node")
+                                .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+                                .on("mouseover", function(d){return tooltip.style("visibility", "visible")
+                                            .html("<b>Playlist Name:</b> " + d.className + "<br/>" +
+                                                    "<b>Track Count: </b>" + d.value + "<br/>" +
+                                                    "<b>User Popularity: </b>" + d.user_popularity + "<br/>" +
+                                                    "<b>Username: </b>" + d.username + "<br/>" +
+                                                    "<b>Tracks: </b>" + d.tracks + "<br/>" +
+                                                    "<b>Artists: </b>" + d.artists + "<br/>"
+                                            );})
+                                .on("mousemove", function(){return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
+                                .on("mouseout", function(){return tooltip.style("visibility", "hidden");});
+            }
+            if (stat_filter == "robot") {
+                var node = svg.selectAll(".node")
+                                                .data(bubble.nodes(classes(root))
+                                                .filter(function(d) { return !d.children; }))
+                                            .enter()
+                                                .append("g")
+                                                .attr("class", "node")
+                                                .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+                                                .on("mouseover", function(d){return tooltip.style("visibility", "visible")
+                                                            .html("<b>Playlist Name:</b> " + d.className + "<br/>" +
+                                                                    "<b>Track Count: </b>" + d.value + "<br/>" +
+                                                                    "<b>Robot Popularity: </b>" + d.robot_popularity + "<br/>" +
+                                                                    "<b>Username: </b>" + d.username + "<br/>" +
+                                                                    "<b>Tracks: </b>" + d.tracks + "<br/>" +
+                                                                    "<b>Artists: </b>" + d.artists + "<br/>"
+                                                            );})
+                                                .on("mousemove", function(){return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
+                                                .on("mouseout", function(){return tooltip.style("visibility", "hidden");});
+            }
+            if (stat_filter == "tester") {
+                var node = svg.selectAll(".node")
+                                                .data(bubble.nodes(classes(root))
+                                                .filter(function(d) { return !d.children; }))
+                                            .enter()
+                                                .append("g")
+                                                .attr("class", "node")
+                                                .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+                                                .on("mouseover", function(d){return tooltip.style("visibility", "visible")
+                                                            .html("<b>Playlist Name:</b> " + d.className + "<br/>" +
+                                                                    "<b>Track Count: </b>" + d.value + "<br/>" +
+                                                                    "<b>Tester Popularity: </b>" + d.tester_popularity + "<br/>" +
+                                                                    "<b>Username: </b>" + d.username + "<br/>" +
+                                                                    "<b>Tracks: </b>" + d.tracks + "<br/>" +
+                                                                    "<b>Artists: </b>" + d.artists + "<br/>"
+                                                            );})
+                                                .on("mousemove", function(){return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
+                                                .on("mouseout", function(){return tooltip.style("visibility", "hidden");});
+            }
+            if (stat_filter == "all") {
+                var node = svg.selectAll(".node")
+                                                .data(bubble.nodes(classes(root))
+                                                .filter(function(d) { return !d.children; }))
+                                            .enter()
+                                                .append("g")
+                                                .attr("class", "node")
+                                                .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+                                                .on("mouseover", function(d){return tooltip.style("visibility", "visible")
+                                                            .html("<b>Playlist Name:</b> " + d.className + "<br/>" +
+                                                                    "<b>Track Count: </b>" + d.value + "<br/>" +
+                                                                    "<b>General Popularity: </b>" + (d.tester_popularity + d.robot_popularity + d.user_popularity) + "<br/>" +
+                                                                    "<b>Username: </b>" + d.username + "<br/>" +
+                                                                    "<b>Tracks: </b>" + d.tracks + "<br/>" +
+                                                                    "<b>Artists: </b>" + d.artists + "<br/>"
+                                                            );})
+                                                .on("mousemove", function(){return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
+                                                .on("mouseout", function(){return tooltip.style("visibility", "hidden");});
+            }
+            if (stat_filter == "ratio_general") {
+                var node = svg.selectAll(".node")
+                                                .data(bubble.nodes(classes(root))
+                                                .filter(function(d) { return !d.children; }))
+                                            .enter()
+                                                .append("g")
+                                                .attr("class", "node")
+                                                .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+                                                .on("mouseover", function(d){return tooltip.style("visibility", "visible")
+                                                            .html("<b>Playlist Name:</b> " + d.className + "<br/>" +
+                                                                    "<b>Track Count: </b>" + d.value + "<br/>" +
+                                                                    "<b>General Popularity: </b>" + ((d.tester_popularity + d.robot_popularity + d.user_popularity)/ d.value) + "<br/>" +
+                                                                    "<b>Username: </b>" + d.username + "<br/>" +
+                                                                    "<b>Tracks: </b>" + d.tracks + "<br/>" +
+                                                                    "<b>Artists: </b>" + d.artists + "<br/>"
+                                                            );})
+                                                .on("mousemove", function(){return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
+                                                .on("mouseout", function(){return tooltip.style("visibility", "hidden");});
+            }
+            if (stat_filter == "ratio_user") {
+                var node = svg.selectAll(".node")
+                                                .data(bubble.nodes(classes(root))
+                                                .filter(function(d) { return !d.children; }))
+                                            .enter()
+                                                .append("g")
+                                                .attr("class", "node")
+                                                .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+                                                .on("mouseover", function(d){return tooltip.style("visibility", "visible")
+                                                            .html("<b>Playlist Name:</b> " + d.className + "<br/>" +
+                                                                    "<b>Track Count: </b>" + d.value + "<br/>" +
+                                                                    "<b>General Popularity: </b>" + (d.user_popularity/ d.value) + "<br/>" +
+                                                                    "<b>Username: </b>" + d.username + "<br/>" +
+                                                                    "<b>Tracks: </b>" + d.tracks + "<br/>" +
+                                                                    "<b>Artists: </b>" + d.artists + "<br/>"
+                                                            );})
+                                                .on("mousemove", function(){return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
+                                                .on("mouseout", function(){return tooltip.style("visibility", "hidden");});
+            }
+    node.append("circle")
+        .attr("r", function(d) { return d.r; })
+        .style("fill", function(d) { return color(d.packageName); });
+
+    node.append("text")
+        .attr("dy", ".3em")
+        .style("text-anchor", "middle")
+        .text(function(d) { return d.className.substring(0, d.r / 3); });
+    });
+
+
+    // Returns a flattened hierarchy containing all leaf nodes under the root.
+    function classes(root) {
+        var classes = [];
+
+        function recurse(name, node) {
+            if (node.children) node.children.forEach(function(child) { recurse(node.name, child); });
+            else classes.push({packageName: name,
+                className: node.name,
+                value: node.trackCount,
+                trackList: node.tracks,
+                username: node.user,
+                artists: node.artists,
+                albums: node.albums,
+                tracks: node.tracks,
+                id: node.id,
+                user_popularity: node.user_popularity,
+                robot_popularity: node.robot_popularity,
+                tester_popularity: node.tester_popularity
+            });
+        }
+
+        recurse(null, root);
+        return {children: classes};
+    }
+
+    d3.select(self.frameElement).style("height", diameter + "px");
+
+    </script>
+{% endblock %}

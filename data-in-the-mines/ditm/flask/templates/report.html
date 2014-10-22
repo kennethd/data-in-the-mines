@@ -39,5 +39,12 @@
     {% endif %}
 </menu>
 
+<div id="report_content">
+    <p>{{resource_path}}</p>
+    <p>{{report_template}}</p>
+    {% if report_template %}
+        {% include report_template %}
+    {% endif %}
+</div>
 
 {% endblock %}
