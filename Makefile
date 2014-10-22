@@ -24,12 +24,12 @@ test:
 # runtime targets
 
 run-exampleapp:
-	. ./bin/activate && ./exampleapp/app.py
+	. ./bin/activate && ./exampleapp/app.py --config=config --debug
 
 # installation targets
 
-install: package-deps
-	git pull origin master && cd ./data-in-the-mines && ./setup.py $(SETUP_PY_TARGET)
+install: package-deps virtualenv
+	git pull origin master && . ./bin/activate && cd ./data-in-the-mines && ./setup.py $(SETUP_PY_TARGET)
 
 install-crontab:
 	git pull origin master && ./bin/install-crontab
