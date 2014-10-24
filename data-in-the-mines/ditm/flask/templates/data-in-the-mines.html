@@ -1,7 +1,5 @@
 {% extends "base.html" %}
 {% block head %}
-    <link rel="stylesheet" type="text/css" href="{{ ditm_path }}/static/ditm.css">
-    <script src="{{ ditm_path }}/static/ditm.js"></script>
     <script src="/static/jquery-1.11.0.min.js"></script>
 {% endblock %}
 {% block title %}data in the mines{% endblock %}
@@ -51,15 +49,15 @@
 <script>
 
 $(".exampleapp_nav").change(function() {
-    var selected_name =  $(this).attr("name")
-    var redirect_path = ["{{ditm_path}}"]
+    var selected_name =  $(this).attr("name");
+    var redirect_path = ["{{ditm_path}}"];
     $(".exampleapp_nav").each(function() {
-        redirect_path.push($(this).val())
+        redirect_path.push($(this).val());
         if (selected_name == $(this).attr("name")) {
             return false;
         }
     })
-    window.location = redirect_path.join("/")
+    window.location = redirect_path.join("/");
 });
 
 </script>

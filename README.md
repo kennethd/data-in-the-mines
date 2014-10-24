@@ -1,6 +1,6 @@
 # data in the mines
 
-data-in-the-mines, or ditm, provides a framework for periodically creating
+data-in-the-mines provides a framework for periodically creating
 reports from your data sources, with the primary goal of automating data
 discovery reports and providing a window onto the data in the mines.
 

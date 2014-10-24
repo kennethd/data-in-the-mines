@@ -40,7 +40,7 @@
 
     $("#sort_list").change(function() {
         var filter = $(this).val()
-        window.location = "{{ ditm_path }}/visuals/examples/visual_playlists?filter=" + filter
+        window.location = window.location.href.split("?")[0] + "?filter=" + filter
     });
 
     var stat_filter = $("#sort_list").val()
@@ -48,8 +48,7 @@
         .append("div")
         .style("position", "absolute")
         .style("background-color", "#fff")
-        .style("background-image",
-                            "linear-gradient(#eee .1em, transparent .1em)")
+        .style("background-image", "linear-gradient(#eee .1em, transparent .1em)")
         .style("background-size", "100% 1.2em")
         .style("color", "black")
         .style("z-index", "10")
@@ -90,7 +89,7 @@
         .attr("height", diameter)
         .attr("class", "bubble");
 
-    d3.json("{{resource_path}}/resources/playlists.json", function(error, root) {
+    d3.json(window.location.href.split("?")[0] + "/resources/playlists.json", function(error, root) {
             if (stat_filter == "user") {
                 var node = svg.selectAll(".node")
                                 .data(bubble.nodes(classes(root))
