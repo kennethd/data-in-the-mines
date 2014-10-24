@@ -23,7 +23,6 @@
 
     {% if report_ids %}
     <select class="exampleapp_nav" name="report_id">
-        <option value=""></option>
     {% for r in report_ids %}
         <option value="{{ r }}"{% if r == report_id %} selected="true"{% endif %}>{{ r }}</option>
     {% endfor %}
@@ -52,11 +51,17 @@ $(".exampleapp_nav").change(function() {
     var selected_name =  $(this).attr("name");
     var redirect_path = ["{{ditm_path}}"];
     $(".exampleapp_nav").each(function() {
-        redirect_path.push($(this).val());
+        if ($(this).val()) {
+            redirect_path.push($(this).val());
+        }
+        else {
+            return false;
+        }
         if (selected_name == $(this).attr("name")) {
             return false;
         }
     })
+    // console.log('redirect to ' + window.location.href);
     window.location = redirect_path.join("/");
 });
 
